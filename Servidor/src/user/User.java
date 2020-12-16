@@ -91,17 +91,20 @@ public class User extends UnicastRemoteObject implements UserInterface{
      * Connects user with server interface and register into the remote object.
      * @throws java.rmi.RemoteException
      */
-    public void startUser() throws RemoteException{
+    public boolean startUser() throws RemoteException{
         try{
             Naming.bind("user"+this.name, this);
             this.server = (InterfaceServidor)Naming.lookup("server");
-            server.registerUser(this.name);
+            return server.registerUser(this.name);
         } catch (AlreadyBoundException ex) {
             Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         } catch (MalformedURLException ex) {
             Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         } catch (NotBoundException ex) {
             Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
     }
     

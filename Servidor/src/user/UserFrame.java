@@ -314,12 +314,16 @@ public class UserFrame extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         try {
-            if(this.userNameTextField.getText().length()>0){
-                user = new User(this.userNameTextField.getText(), this);
-                user.startUser();
-                this.addQueuOrTopicTab(user.getName());
-                this.jPanel3.setVisible(true);
-                this.jPanel2.setVisible(false);
+            String tmp = this.userNameTextField.getText();
+            if(tmp.length()>0){
+                user = new User(tmp, this);
+                if(user.startUser()){
+                    this.addQueuOrTopicTab(user.getName());
+                    this.jPanel3.setVisible(true);
+                    this.jPanel2.setVisible(false);
+                }else{
+                    this.errorjLabel.setText("User's name duplicated.");
+                }
             }else{
                 this.errorjLabel.setText("User needs a namme.");
             }

@@ -14,7 +14,7 @@ import javax.jms.Session;
  */
 public interface InterfaceServidor extends Remote{
     
-    public void registerUser(String name) throws RemoteException;
+    public boolean registerUser(String name) throws RemoteException;
     
     public void sendDirectMessage(String msg, String user) throws RemoteException;
     

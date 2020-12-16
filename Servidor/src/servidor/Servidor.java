@@ -144,29 +144,46 @@ public class Servidor extends UnicastRemoteObject implements InterfaceServidor{
         }
     }
     
+    /**
+     * Checks if user has duplicated name.
+     * @param name
+     * @return 
+     */
+    public boolean checkDuplicate(String name){
+        for(Client c : users){
+            if(c.getName().equals(name)){
+                return false;
+            }
+        }
+        return true;
+    }
+    
         
     //------- Remote methods below -----------
     
     /**
      * Get the remote user object and created a Queu to subscribe it to.
      * @param name
+     * @return true or false
      */
     @Override
-    public void registerUser(String name) {
+    public boolean registerUser(String name) {
         try {
-            //Finding the remote user object.
-            UserInterface user = ( UserInterface )Naming.lookup("user"+name);
-            Client cli = new Client(name, user, this);
-            //Creating a queu for each registered user.
-            Destination dest = this.session.createQueue(name);
-            MessageConsumer consumer = this.session.createConsumer(dest);
-            //Giving that user a MessageListener for that queu
-            consumer.setMessageListener(cli);
-            //Adding that queu to the user's list.
-            user.addQueue(name);
-            //Adding the user to the servers' user list.
-            users.add(cli);
-            
+            if(checkDuplicate(name)){
+                //Finding the remote user object.
+                UserInterface user = ( UserInterface )Naming.lookup("user"+name);
+                Client cli = new Client(name, user, this);
+                //Creating a queu for each registered user.
+                Destination dest = this.session.createQueue(name);
+                MessageConsumer consumer = this.session.createConsumer(dest);
+                //Giving that user a MessageListener for that queu
+                consumer.setMessageListener(cli);
+                //Adding that queu to the user's list.
+                user.addQueue(name);
+                //Adding the user to the servers' user list.
+                users.add(cli);
+                return true;
+            }
         } catch (NotBoundException ex) {
             Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MalformedURLException ex) {
@@ -176,6 +193,7 @@ public class Servidor extends UnicastRemoteObject implements InterfaceServidor{
         } catch (JMSException ex) {
             Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
         } 
+        return false;
     }
     /**
      * Returns a String[] containing the queu names.
